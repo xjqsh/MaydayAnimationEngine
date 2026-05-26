@@ -1,6 +1,7 @@
 package com.maydaymemory.mae.control.runner;
 
 import com.maydaymemory.mae.basic.Animation;
+import com.maydaymemory.mae.basic.IEvaluationContext;
 import com.maydaymemory.mae.basic.Keyframe;
 import com.maydaymemory.mae.basic.Pose;
 import com.maydaymemory.mae.control.OutputPort;
@@ -55,6 +56,26 @@ public class AnimationRunner implements Tickable, IAnimationRunner {
      */
     public OutputPort<Pose> getOutputPort() {
         return outputPort;
+    }
+
+    /**
+     * Evaluates the animation at the current progress with the given evaluation context,
+     * returning the resulting pose.
+     * <p>
+     * This is the recommended API for dynamic keyframes (e.g. MoLang expressions).
+     * The context is passed as a parameter and not stored, avoiding any risk of
+     * accidental long-lived references.
+     * </p>
+     *
+     * @param ctx the evaluation context (e.g. a {@code MolangContext}), may be null
+     * @return the evaluated pose at the current animation progress
+     */
+    public Pose evaluate(@Nullable IEvaluationContext ctx) {
+        float timeS = MathUtil.toSecond(context.getProgress());
+        if (ctx != null) {
+            return animation.evaluate(timeS, ctx);
+        }
+        return animation.evaluate(timeS);
     }
 
 

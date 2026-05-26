@@ -35,6 +35,26 @@ public class Vector3fCubicSplineInterpolator implements Interpolator<Vector3fc> 
     }
 
     /**
+     * Interpolates between two keyframes in the given channel using cubic spline interpolation,
+     * with an evaluation context for dynamic keyframes.
+     */
+    @Override
+    public Vector3fc interpolate(InterpolatableChannel<Vector3fc> channel, int indexFrom, int indexTo,
+                                  float alpha, IEvaluationContext ctx) {
+        int size = channel.getKeyFrameCount();
+        int prev = indexFrom == 0 ? 0 : indexFrom - 1;
+        int next = indexTo == (size - 1) ? indexTo : indexTo + 1;
+        Vector3fc vecPrev = channel.getKeyFrame(prev).getPost(ctx);
+        Vector3fc vecFrom = channel.getKeyFrame(indexFrom).getPre(ctx);
+        Vector3fc vecTo = channel.getKeyFrame(indexTo).getPre(ctx);
+        Vector3fc vecNext = channel.getKeyFrame(next).getPre(ctx);
+        float x = cubicSpline(vecPrev.x(), vecFrom.x(), vecTo.x(), vecNext.x(), alpha);
+        float y = cubicSpline(vecPrev.y(), vecFrom.y(), vecTo.y(), vecNext.y(), alpha);
+        float z = cubicSpline(vecPrev.z(), vecFrom.z(), vecTo.z(), vecNext.z(), alpha);
+        return new Vector3f(x, y, z);
+    }
+
+    /**
      * Returns the priority level of this interpolator.
      * <p>
      * Spline interpolation's priority is set to

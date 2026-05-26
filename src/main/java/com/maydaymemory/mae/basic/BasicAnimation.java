@@ -75,14 +75,22 @@ public class BasicAnimation implements Animation {
 
     @Override
     public Pose evaluate(float timeS) {
+        return evaluate(timeS, null);
+    }
+
+    @Override
+    public Pose evaluate(float timeS, IEvaluationContext ctx) {
+        if (ctx != null) {
+            ctx.prepareEvaluation(timeS);
+        }
         PoseBuilder poseBuilder = poseBuilderSupplier.get();
         for(ChannelBunch channelBunch : channels) {
             InterpolatableChannel<? extends Vector3fc> translationChannel = channelBunch.translationChannel;
             InterpolatableChannel<? extends Rotation> rotationChannel = channelBunch.rotationChannel;
             InterpolatableChannel<? extends Vector3fc> scaleChannel = channelBunch.scaleChannel;
-            Vector3fc translation = translationChannel == null ? IDENTITY_TRANSLATION : translationChannel.compute(timeS);
-            Rotation rotation = rotationChannel == null ? null : rotationChannel.compute(timeS);
-            Vector3fc scale = scaleChannel == null ? IDENTITY_SCALE : scaleChannel.compute(timeS);
+            Vector3fc translation = translationChannel == null ? IDENTITY_TRANSLATION : translationChannel.compute(timeS, ctx);
+            Rotation rotation = rotationChannel == null ? null : rotationChannel.compute(timeS, ctx);
+            Vector3fc scale = scaleChannel == null ? IDENTITY_SCALE : scaleChannel.compute(timeS, ctx);
             BoneTransform boneTransform;
             if (rotation == null) {
                 boneTransform = transformFactory.createBoneTransform(channelBunch.boneIndex, translation, IDENTITY_ROTATION, scale);

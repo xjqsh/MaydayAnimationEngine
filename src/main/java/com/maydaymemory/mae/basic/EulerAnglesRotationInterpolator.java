@@ -25,6 +25,12 @@ public class EulerAnglesRotationInterpolator implements Interpolator<Rotation>{
     }
 
     @Override
+    public Rotation interpolate(InterpolatableChannel<Rotation> channel, int indexFrom, int indexTo,
+                                 float alpha, IEvaluationContext ctx) {
+        return new Rotation(interpolator.interpolate(new ChannelWrapper(channel, interpolator), indexFrom, indexTo, alpha, ctx));
+    }
+
+    @Override
     public Priority getPriority() {
         return interpolator.getPriority();
     }
@@ -85,6 +91,24 @@ public class EulerAnglesRotationInterpolator implements Interpolator<Rotation>{
         @Override
         public Vector3fc getPost() {
             Rotation post = initialKeyframe.getPost();
+            if (!post.isEulerAngles()) {
+                throw new IllegalArgumentException("Rotation must be euler angles when using EulerAnglesRotationInterpolator");
+            }
+            return post.getEulerAngles();
+        }
+
+        @Override
+        public Vector3fc getPre(IEvaluationContext ctx) {
+            Rotation pre = initialKeyframe.getPre(ctx);
+            if (!pre.isEulerAngles()) {
+                throw new IllegalArgumentException("Rotation must be euler angles when using EulerAnglesRotationInterpolator");
+            }
+            return pre.getEulerAngles();
+        }
+
+        @Override
+        public Vector3fc getPost(IEvaluationContext ctx) {
+            Rotation post = initialKeyframe.getPost(ctx);
             if (!post.isEulerAngles()) {
                 throw new IllegalArgumentException("Rotation must be euler angles when using EulerAnglesRotationInterpolator");
             }

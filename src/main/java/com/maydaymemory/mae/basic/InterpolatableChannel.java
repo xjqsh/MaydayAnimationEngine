@@ -22,6 +22,18 @@ public interface InterpolatableChannel<T> extends AnimationChannel, RandomAccess
     T compute(float timeS);
 
     /**
+     * Compute the interpolated value at the given time,
+     * with an evaluation context for dynamic keyframes.
+     *
+     * @param timeS the time at which to compute the animation output.
+     * @param ctx the evaluation context, may be null
+     * @return animation output.
+     */
+    default T compute(float timeS, IEvaluationContext ctx) {
+        return compute(timeS);
+    }
+
+    /**
      * Returns the keyframe at the specified index. The interpolatable channel must support indexed access
      * to allow efficient interpolation between keyframes.
      *

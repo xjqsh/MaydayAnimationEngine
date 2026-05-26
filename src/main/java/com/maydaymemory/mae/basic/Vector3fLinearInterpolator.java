@@ -28,6 +28,20 @@ public class Vector3fLinearInterpolator implements Interpolator<Vector3fc>{
     }
 
     /**
+     * Interpolates between two keyframes in the given channel using linear interpolation,
+     * with an evaluation context for dynamic keyframes.
+     */
+    @Override
+    public Vector3fc interpolate(InterpolatableChannel<Vector3fc> channel, int indexFrom, int indexTo,
+                                  float alpha, IEvaluationContext ctx) {
+        InterpolatableKeyframe<Vector3fc> keyFrameFrom = channel.getKeyFrame(indexFrom);
+        InterpolatableKeyframe<Vector3fc> keyFrameTo = channel.getKeyFrame(indexTo);
+        Vector3fc vecFrom = keyFrameFrom.getPost(ctx);
+        Vector3fc vecTo = keyFrameTo.getPre(ctx);
+        return vecFrom.lerp(vecTo, alpha, new Vector3f());
+    }
+
+    /**
      * Returns the priority level of this interpolator.
      * <p>
      * For standard linear interpolation, the default priority is set to {@code Priority.MEDIUM}.

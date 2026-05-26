@@ -1,5 +1,6 @@
 package com.maydaymemory.mae.control.runner;
 
+import com.maydaymemory.mae.basic.IEvaluationContext;
 import com.maydaymemory.mae.basic.Keyframe;
 import com.maydaymemory.mae.basic.Pose;
 
@@ -31,6 +32,22 @@ public interface IAnimationRunner {
      * @return the evaluated pose at the current animation progress
      */
     Pose evaluate();
+
+    /**
+     * Evaluates the animation at the current progress with the given evaluation context,
+     * returning the resulting pose.
+     * <p>
+     * This is the recommended API for dynamic keyframes (e.g. MoLang expressions).
+     * The context is passed as a parameter and not stored, avoiding any risk of
+     * accidental long-lived references that could prevent garbage collection.
+     * </p>
+     *
+     * @param ctx the evaluation context (e.g. a {@code MolangContext}), may be null
+     * @return the evaluated pose at the current animation progress
+     */
+    default Pose evaluate(@Nullable IEvaluationContext ctx) {
+        return evaluate();
+    }
 
     /**
      * Extracts clips for a specific channel based on the current clip plans in animation context.

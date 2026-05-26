@@ -39,6 +39,11 @@ public class ArrayInterpolatableChannel<T>
 
     @Override
     public T compute(float timeS) {
+        return compute(timeS, null);
+    }
+
+    @Override
+    public T compute(float timeS, IEvaluationContext ctx) {
         assertNotDirty();
         int index = findIndexBefore(timeS, false);
         int indexNext = Math.min(innerList.size() - 1, index + 1);
@@ -46,12 +51,12 @@ public class ArrayInterpolatableChannel<T>
             if (isEmpty()) {
                 return null;
             } else {
-                return get(0).getInterpolator().interpolate(this, 0, 0, 0);
+                return get(0).getInterpolator().interpolate(this, 0, 0, 0, ctx);
             }
         }
         InterpolatableKeyframe<T> keyframe = get(index);
         if (index == indexNext) { // only when timeS >= endTimeS
-            return keyframe.getInterpolator().interpolate(this, index, index, 0);
+            return keyframe.getInterpolator().interpolate(this, index, index, 0, ctx);
         }
         InterpolatableKeyframe<T> keyframeNext = get(indexNext);
         float alphaTime = timeS - keyframe.getTimeS();
@@ -61,10 +66,10 @@ public class ArrayInterpolatableChannel<T>
         Interpolator<T> interpolatorNext = keyframeNext.getInterpolator();
         if (interpolator.getPriority().compareTo(interpolatorNext.getPriority()) >= 0) {
             // use previous interpolator if its priority is greater than or equal to next one
-            return interpolator.interpolate(this, index, indexNext, alpha);
+            return interpolator.interpolate(this, index, indexNext, alpha, ctx);
         } else {
             // use next interpolator if priority is greater than previous one
-            return interpolatorNext.interpolate(this, index, indexNext, alpha);
+            return interpolatorNext.interpolate(this, index, indexNext, alpha, ctx);
         }
     }
 

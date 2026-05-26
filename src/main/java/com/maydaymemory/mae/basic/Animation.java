@@ -54,6 +54,23 @@ public interface Animation {
     Pose evaluate(float timeS);
 
     /**
+     * Evaluates the animation at the given time and returns the corresponding pose,
+     * with an evaluation context for dynamic keyframes (e.g. MoLang expressions).
+     * <p>
+     * The context's {@link IEvaluationContext#prepareEvaluation(float)} hook is called
+     * before evaluation begins, allowing the context to synchronize its state with the
+     * current playback time.
+     * </p>
+     *
+     * @param timeS The time (in seconds) at which to evaluate the animation.
+     * @param ctx the evaluation context, may be null
+     * @return A {@link Pose} representing the skeletal pose at the given time.
+     */
+    default Pose evaluate(float timeS, IEvaluationContext ctx) {
+        return evaluate(timeS);
+    }
+
+    /**
      * Set a clip channel to this animation.
      *
      * <p><b>Important: </b>Type safety is not checked internally.

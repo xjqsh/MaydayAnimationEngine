@@ -22,6 +22,22 @@ public interface Interpolator<T> {
     T interpolate(InterpolatableChannel<T> channel, int indexFrom, int indexTo, float alpha);
 
     /**
+     * Interpolates between two keyframes in the specified channel,
+     * with an evaluation context for dynamic keyframes.
+     *
+     * @param channel the channel containing the keyframes
+     * @param indexFrom the index of the starting keyframe
+     * @param indexTo the index of the ending keyframe
+     * @param alpha the interpolation factor (0.0 to 1.0)
+     * @param ctx the evaluation context, may be null
+     * @return the interpolated value
+     */
+    default T interpolate(InterpolatableChannel<T> channel, int indexFrom, int indexTo,
+                          float alpha, IEvaluationContext ctx) {
+        return interpolate(channel, indexFrom, indexTo, alpha);
+    }
+
+    /**
      * Get the priority of the current interpolator. When interpolating between two keyframes,
      * each keyframe specifies an interpolator, and the one with the higher priority will be used first.
      * If the priorities are equal, the interpolator of the earlier keyframe will be used
